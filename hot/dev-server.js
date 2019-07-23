@@ -47,12 +47,21 @@ if (module.hot) {
 				}
 			});
 	};
-	var hotEmitter = require("./emitter");
-	hotEmitter.on("webpackHotUpdate", function(currentHash) {
-		lastHash = currentHash;
-		if (!upToDate() && module.hot.status() === "idle") {
-			log("info", "[HMR] Checking for updates on the server...");
-			check();
+	// var hotEmitter = require("./emitter");
+	// hotEmitter.on("webpackHotUpdate", function(currentHash) {
+	// 	lastHash = currentHash;
+	// 	if (!upToDate() && module.hot.status() === "idle") {
+	// 		log("info", "[HMR] Checking for updates on the server...");
+	// 		check();
+	// 	}
+	// });
+	window.addEventListener('message', (e) => {
+		if (typeof e.data === 'string' && e.data.includes('webpackHotUpdate')) {
+			lastHash = e.data.replace('webpackHotUpdate', '');
+			if (!upToDate() && module.hot.status() === "idle") {
+				log("info", "[HMR] Checking for updates on the server...");
+				check();
+			}
 		}
 	});
 	log("info", "[HMR] Waiting for update signal from WDS...");
